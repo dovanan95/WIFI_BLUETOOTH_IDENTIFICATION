@@ -212,7 +212,7 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
         return dist_to_last
         cursor.close()
 
-    def dist_last_same_computing(self, start_point, signal_ID, type_signal):
+   def dist_last_same_computing(self, start_point, signal_ID, type_signal):
         sqlConnection = sqlite3.connect(self.db_address)
         cursor = sqlConnection.cursor()
         querry = """select end_point, type, length_signal, signal_ID, symbol_ID, dist_to_end 
@@ -227,14 +227,14 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
             if(type_signal == row[1]):
                 if(signal_ID == row[3]):
                     dist_to_last_same = start_point - row[0]
-                elif(signal_ID != row[1]):
+                elif(signal_ID != row[3]):
                     if(len(signal_ID_check)>0):
                         for i in range(len(signal_ID_check)-1):
                             if(signal_ID_check[i]== signal_ID_check[i+1]):
                                 signal_length_matrix[i+1] = 0
-                        if(signal_ID_check[len(signal_ID_check)-1] == signal_ID_check[len(signal_ID_check)-2]):
+                        if(signal_ID_check[len(signal_ID_check)-1] == row[3]):
                             dist_to_last_same = start_point + sum(signal_length_matrix) + row[5] - row[2]
-                        elif(signal_ID_check[len(signal_ID_check)-1] != signal_ID_check[len(signal_ID_check)-2]):
+                        elif(signal_ID_check[len(signal_ID_check)-1] != row[3]):
                             dist_to_last_same = start_point + sum(signal_length_matrix) + row[5]
                         
                     elif(len(signal_ID_check) == 0):
@@ -249,7 +249,7 @@ class blk(gr.sync_block):  # other base classes are basic_block, decim_block, in
 
         return dist_to_last_same
         cursor.close()
-
+        
     def symbol_computing(self, series_in):
         N = len(series_in)
         thrs_enrgy = 0.3
